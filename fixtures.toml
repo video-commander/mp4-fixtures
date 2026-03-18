@@ -1,0 +1,210 @@
+# fixtures.toml
+# Configuration for the mp4-fixtures test file generator.
+# Run: ./generate.sh [--config path/to/fixtures.toml]
+
+[settings]
+ffmpeg_bin  = "ffmpeg"   # path to ffmpeg binary, or just "ffmpeg" if on PATH
+output_dir  = "./output"
+output_format = "mp4"    # mp4 | mov | mkv — swaps container extension globally
+
+[categories]
+codecs      = true
+resolutions = true
+frame_rates = true
+audio       = true
+container   = true
+metadata    = true
+edge_cases  = true
+hdr         = false   # slow/large; enable explicitly when needed
+
+[defaults]
+crf           = 23
+audio_bitrate = "128k"
+duration      = 10      # seconds
+resolution    = "1920x1080"
+fps           = 30
+
+# ── Per-fixture overrides ─────────────────────────────────────────────────────
+# Any key here overrides the [defaults] for that specific fixture.
+# Set enabled = false to skip a fixture without disabling its whole category.
+
+[fixtures.codecs.h264_baseline]
+enabled = true
+crf     = 23
+
+[fixtures.codecs.h264_main]
+enabled = true
+crf     = 23
+
+[fixtures.codecs.h264_high]
+enabled = true
+crf     = 23
+
+[fixtures.codecs.hevc_main]
+enabled = true
+crf     = 28
+
+[fixtures.codecs.hevc_main10]
+enabled = true
+crf     = 28
+
+[fixtures.codecs.av1]
+enabled = true
+crf     = 30
+
+[fixtures.codecs.vp9]
+enabled = true
+crf     = 33
+
+[fixtures.resolutions.r360p]
+enabled    = true
+resolution = "640x360"
+
+[fixtures.resolutions.r480p]
+enabled    = true
+resolution = "854x480"
+
+[fixtures.resolutions.r720p]
+enabled    = true
+resolution = "1280x720"
+
+[fixtures.resolutions.r1080p]
+enabled    = true
+resolution = "1920x1080"
+
+[fixtures.resolutions.r4k]
+enabled    = true
+resolution = "3840x2160"
+
+[fixtures.frame_rates.fps_2397]
+enabled = true
+fps     = 23.976
+
+[fixtures.frame_rates.fps_24]
+enabled = true
+fps     = 24
+
+[fixtures.frame_rates.fps_25]
+enabled = true
+fps     = 25
+
+[fixtures.frame_rates.fps_2997]
+enabled = true
+fps     = 29.97
+
+[fixtures.frame_rates.fps_30]
+enabled = true
+fps     = 30
+
+[fixtures.frame_rates.fps_50]
+enabled = true
+fps     = 50
+
+[fixtures.frame_rates.fps_5994]
+enabled = true
+fps     = 59.94
+
+[fixtures.frame_rates.fps_60]
+enabled = true
+fps     = 60
+
+[fixtures.audio.aac_lc]
+enabled       = true
+audio_bitrate = "128k"
+
+[fixtures.audio.aac_he]
+enabled       = true
+audio_bitrate = "64k"
+
+[fixtures.audio.opus]
+enabled       = true
+audio_bitrate = "128k"
+
+[fixtures.audio.ac3]
+enabled       = true
+audio_bitrate = "192k"
+
+[fixtures.audio.multichannel_51]
+enabled = true
+
+[fixtures.audio.multi_track]
+enabled = true
+
+[fixtures.audio.audio_only]
+enabled = true
+
+[fixtures.audio.video_only]
+enabled = true
+
+[fixtures.container.fragmented_fmp4]
+enabled = true
+
+[fixtures.container.faststart]
+enabled = true
+
+[fixtures.container.moov_at_end]
+enabled = true
+
+[fixtures.container.edit_list]
+enabled = true
+
+[fixtures.metadata.rotation_90]
+enabled = true
+
+[fixtures.metadata.rotation_180]
+enabled = true
+
+[fixtures.metadata.rotation_270]
+enabled = true
+
+[fixtures.metadata.chapters]
+enabled  = true
+duration = 30
+
+[fixtures.metadata.subtitle_track]
+enabled = true
+
+[fixtures.edge_cases.very_short]
+enabled  = true
+duration = 0.5
+
+[fixtures.edge_cases.long_2hr]
+enabled  = true
+duration = 7200
+crf      = 40
+audio_bitrate = "32k"
+
+[fixtures.edge_cases.truncated]
+enabled = true
+
+[fixtures.edge_cases.bframes]
+enabled = true
+crf     = 23
+
+[fixtures.edge_cases.many_fragments]
+enabled = true
+
+[fixtures.hdr.hevc_hdr10]
+enabled    = true
+crf        = 28
+resolution = "3840x2160"
+
+# ── Custom fixtures ───────────────────────────────────────────────────────────
+# Add arbitrary fixtures without editing any script.
+# `name` becomes the output filename (no extension needed).
+# `video_args` and `audio_args` are passed verbatim to ffmpeg.
+# All other keys are optional and fall back to [defaults].
+
+# [[custom]]
+# name        = "my_special_case"
+# enabled     = true
+# video_args  = "-c:v libx264 -crf 18 -vf scale=1280:720"
+# audio_args  = "-c:a aac -b:a 192k"
+# duration    = 5
+
+# [[custom]]
+# name       = "prores_422"
+# enabled    = true
+# video_args = "-c:v prores_ks -profile:v 2"
+# audio_args = "-c:a pcm_s16le"
+# duration   = 10
