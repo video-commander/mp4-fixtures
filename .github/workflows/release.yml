@@ -1,0 +1,71 @@
+name: release
+
+# Generates the full fixture set and publishes it as a GitHub release asset.
+# Consumers download a pinned fixtures-v* release so their test inputs stay
+# byte-identical until they bump the tag on purpose.
+#
+# Cut a release with:
+#   git tag fixtures-v1 && git push origin fixtures-v1
+# Manual workflow_dispatch runs generate + verify only (no release), as a
+# dry run for config changes.
+
+on:
+  push:
+    tags: ["fixtures-v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg zstd
+
+      - name: Generate fixtures
+        run: |
+          chmod +x generate.sh
+          ./generate.sh
+
+      - name: Verify fixture set
+        run: |
+          count=$(ls output/*.mp4 | wc -l)
+          echo "generated $count fixtures"
+          # aac_he is expected to fail on stock ffmpeg (needs libfdk_aac);
+          # anything else failing should be investigated via generate.log.
+          grep "FAILED" output/generate.log && echo "^ see generate.log" || true
+          if [ "$count" -lt 45 ]; then
+            echo "expected at least 45 fixtures, got $count" >&2
+            exit 1
+          fi
+          echo "FIXTURE_COUNT=$count" >> "$GITHUB_ENV"
+
+      - name: Package
+        run: |
+          tar --zstd --exclude=generate.log -cf "mp4-fixtures-${GITHUB_REF_NAME}.tar.zst" -C output .
+          sha256sum mp4-fixtures-*.tar.zst | tee checksums.txt
+
+      - name: Create release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes "Fixture set: $FIXTURE_COUNT files, generated with $(ffmpeg -version | head -1 | cut -d' ' -f1-3) on ubuntu-latest." \
+            "mp4-fixtures-${GITHUB_REF_NAME}.tar.zst" checksums.txt output/generate.log
+
+      - name: Upload artifact (dry run)
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        uses: actions/upload-artifact@v4
+        with:
+          name: mp4-fixtures-dry-run
+          path: |
+            mp4-fixtures-*.tar.zst
+            output/generate.log
+          retention-days: 7

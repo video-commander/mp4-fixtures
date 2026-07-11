@@ -27,11 +27,14 @@ _fps_fixture fps_5994
 _fps_fixture fps_60
 
 # VFR — not in TOML (always generated when category is enabled)
+# Cumulative stagger: every 3rd inter-frame gap is 0.05s longer, keeping
+# timestamps monotonic. /TB converts seconds to timebase ticks, and
+# -fps_mode passthrough stops the muxer from flattening it back to CFR.
 log "→ vfr"
 ff vfr \
   -f lavfi -i "$(video_src "$DEFAULT_RESOLUTION" "$DEFAULT_FPS" "$DEFAULT_DURATION")" \
   -f lavfi -i "$(audio_src "$DEFAULT_DURATION")" \
   -c:v libx264 -crf "$DEFAULT_CRF" \
   -c:a aac -b:a "$DEFAULT_AUDIO_BITRATE" \
-  -vf "setpts='if(eq(mod(N\,3)\,0)\,PTS+0.05\,PTS)'" \
+  -vf "setpts='PTS+floor(N/3)*0.05/TB'" -fps_mode passthrough \
   -t "$DEFAULT_DURATION"

@@ -23,6 +23,16 @@ chmod +x generate.sh
 
 Output goes to `./output/` by default.
 
+## Releases
+
+Tagging `fixtures-v*` runs `.github/workflows/release.yml`, which generates the full set on CI and publishes it as a release asset (`mp4-fixtures-<tag>.tar.zst`). Downstream test suites can download a pinned tag so their inputs stay byte-identical until the pin is bumped deliberately:
+
+```bash
+git tag fixtures-v1 && git push origin fixtures-v1
+```
+
+Note: `aac_he` requires an ffmpeg with `libfdk_aac` and is skipped on stock builds, including CI releases.
+
 ## Configuration
 
 All configuration lives in `fixtures.toml`. The key sections:
