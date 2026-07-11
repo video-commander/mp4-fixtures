@@ -16,6 +16,7 @@ container   = true
 metadata    = true
 edge_cases  = true
 gaps        = true
+drm         = true
 hdr         = false   # slow/large; enable explicitly when needed
 
 [defaults]
@@ -207,6 +208,12 @@ duration = 60     # one 0.5s hole every 2s → ~29 gaps; stresses capped gap UIs
 
 [fixtures.gaps.gap_combo]
 enabled = true    # video hole at 4–6s plus audio ending at 7s
+
+[fixtures.drm.drm_cenc]
+enabled = true    # cenc-aes-ctr, KID 1122…ff00; full sinf chain, no pssh
+
+[fixtures.drm.drm_cenc_kid_mismatch]
+enabled = true    # drm_cenc + injected Widevine pssh advertising KID aaaa…aaaa
 
 [fixtures.hdr.hevc_hdr10]
 enabled    = true

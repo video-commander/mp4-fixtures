@@ -59,6 +59,8 @@ audio       = true
 container   = true
 metadata    = true
 edge_cases  = true
+gaps        = true
+drm         = true
 hdr         = false   # disabled by default — slow and large
 ```
 
@@ -133,6 +135,7 @@ duration   = 30
 | `metadata` | Rotation (90/180/270), chapters, embedded subtitle track |
 | `edge_cases` | Very short, 2-hour, truncated, B-frames, many fragments |
 | `gaps` | Timeline gaps: dropped video frames (stretched samples), tracks ending early |
+| `drm` | CENC-encrypted (cenc-aes-ctr, stable KID/key), plus a deliberate tenc-vs-pssh KID mismatch |
 | `hdr` | HEVC HDR10 with correct SEI metadata |
 
 ## Adding a new category
