@@ -75,6 +75,7 @@ run_category audio
 run_category container
 run_category metadata
 run_category edge_cases
+run_category gaps
 run_category hdr
 
 # ── Custom fixtures ───────────────────────────────────────────────────────────

@@ -15,6 +15,7 @@ audio       = true
 container   = true
 metadata    = true
 edge_cases  = true
+gaps        = true
 hdr         = false   # slow/large; enable explicitly when needed
 
 [defaults]
@@ -183,6 +184,29 @@ crf     = 23
 
 [fixtures.edge_cases.many_fragments]
 enabled = true
+
+[fixtures.gaps.video_gap]
+enabled   = true
+gap_start = 4     # seconds; frames between gap_start and gap_end are dropped
+gap_end   = 6
+
+[fixtures.gaps.video_gap_multi]
+enabled = true    # holes at 2–3s and 6–8s
+
+[fixtures.gaps.audio_ends_early]
+enabled        = true
+audio_duration = 7   # audio stops here; video runs the full default duration
+
+[fixtures.gaps.video_ends_early]
+enabled        = true
+video_duration = 7   # video stops here; audio runs the full default duration
+
+[fixtures.gaps.video_gap_many]
+enabled  = true
+duration = 60     # one 0.5s hole every 2s → ~29 gaps; stresses capped gap UIs
+
+[fixtures.gaps.gap_combo]
+enabled = true    # video hole at 4–6s plus audio ending at 7s
 
 [fixtures.hdr.hevc_hdr10]
 enabled    = true

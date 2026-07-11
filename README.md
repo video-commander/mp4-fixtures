@@ -122,6 +122,7 @@ duration   = 30
 | `container` | Fragmented fMP4, faststart, moov-at-end, edit list (elst) |
 | `metadata` | Rotation (90/180/270), chapters, embedded subtitle track |
 | `edge_cases` | Very short, 2-hour, truncated, B-frames, many fragments |
+| `gaps` | Timeline gaps: dropped video frames (stretched samples), tracks ending early |
 | `hdr` | HEVC HDR10 with correct SEI metadata |
 
 ## Adding a new category
