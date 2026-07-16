@@ -21,11 +21,15 @@ fi
 
 if _audio_enabled aac_he; then
   bitrate=$(fixture_get audio aac_he audio_bitrate)
+  # HE-AAC (SBR) is only produced by libfdk_aac; the native `aac` encoder
+  # cannot, and errors on -profile:a aac_he (older ffmpeg silently produced a
+  # plain LC file mislabeled as HE). libfdk is nonfree, so most builds lack it —
+  # ff() then sees "Unknown encoder 'libfdk_aac'" and SKIPs cleanly.
   ff audio_aac_he \
     -f lavfi -i "$(video_src "$RES" "$FPS" "$DUR")" \
     -f lavfi -i "$(audio_src "$DUR")" \
     -c:v libx264 -crf "$CRF" \
-    -c:a aac -profile:a aac_he -b:a "$bitrate" \
+    -c:a libfdk_aac -profile:a aac_he -b:a "$bitrate" \
     -t "$DUR"
 fi
 
