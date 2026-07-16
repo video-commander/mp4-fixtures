@@ -1,0 +1,32 @@
+# fixtures.ci.toml — fast smoke config for pull-request / push CI.
+#
+# Proves every recipe runs and produces a valid MP4 without release-scale
+# encodes. It sets only [categories] + tiny [defaults] and deliberately omits
+# all [fixtures.*] tables: `fixture_enabled` defaults to true for absent
+# entries and `fixture_get` falls back to [defaults], so EVERY fixture — plus
+# any added later — is exercised here with no per-file upkeep. The full,
+# release-scale set is validated by release.yml's workflow_dispatch dry run.
+
+[settings]
+ffmpeg_bin    = "ffmpeg"
+output_dir    = "./output"
+output_format = "mp4"
+
+[categories]
+codecs      = true
+resolutions = true
+frame_rates = true
+audio       = true
+container   = true
+metadata    = true
+edge_cases  = true
+gaps        = true
+drm         = true
+hdr         = true
+
+[defaults]
+crf           = 30
+audio_bitrate = "96k"
+duration      = 8         # leaves room for the gap fixtures (gaps at 4–6s)
+resolution    = "320x180"
+fps           = 24

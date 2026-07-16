@@ -1,0 +1,53 @@
+name: ci
+
+# Fast pre-release smoke test: proves every recipe runs and produces a valid
+# MP4, and that the HDR/colour fixtures carry the right signalling — before a
+# release is ever cut. Uses fixtures.ci.toml (tiny resolution/duration), so the
+# whole set generates in well under a minute. The full release-scale set is
+# validated separately by release.yml (workflow_dispatch dry run, or on tag).
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install ffmpeg + MP4Box
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg gpac
+
+      - name: Install dovi_tool
+        run: |
+          DOVI_VERSION=2.3.3
+          curl -fsSL "https://github.com/quietvoid/dovi_tool/releases/download/${DOVI_VERSION}/dovi_tool-${DOVI_VERSION}-x86_64-unknown-linux-musl.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin
+          dovi_tool --version
+          MP4Box -version 2>&1 | head -1
+
+      - name: Generate (fast smoke config)
+        run: |
+          chmod +x generate.sh
+          ./generate.sh --config fixtures.ci.toml
+
+      - name: Check for generation failures
+        # The HDR/colour recipes self-verify their boxes and log FAILED on a
+        # mismatch (see lib/hdr.sh), so this generic check covers them too.
+        run: |
+          if grep -q "FAILED" output/generate.log; then
+            echo "::error::a fixture failed to generate"
+            grep -nE "→ |FAILED" output/generate.log
+            exit 1
+          fi
+          # SKIP is fine (optional codecs like aac_he/libfdk_aac not in the build).
+          grep -c "SKIP" output/generate.log | xargs echo "skipped (optional codecs):"
+          count=$(ls output/*.mp4 | wc -l)
+          echo "generated $count fixtures"
+          if [ "$count" -lt 40 ]; then
+            echo "::error::expected at least 40 fixtures, got $count"
+            exit 1
+          fi

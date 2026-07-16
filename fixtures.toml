@@ -17,7 +17,7 @@ metadata    = true
 edge_cases  = true
 gaps        = true
 drm         = true
-hdr         = false   # slow/large; enable explicitly when needed
+hdr         = true    # HDR10 + HLG (ffmpeg) and Dolby Vision 8.1 (dovi_tool + MP4Box)
 
 [defaults]
 crf           = 23
@@ -215,10 +215,23 @@ enabled = true    # cenc-aes-ctr, KID 1122…ff00; full sinf chain, no pssh
 [fixtures.drm.drm_cenc_kid_mismatch]
 enabled = true    # drm_cenc + injected Widevine pssh advertising KID aaaa…aaaa
 
+# HDR fixtures exist to exercise colour/HDR metadata boxes, which are
+# resolution-independent — 720p keeps the 10-bit HEVC encodes fast and the
+# release small. Bump resolution here if you want a true 4K HDR sample.
 [fixtures.hdr.hevc_hdr10]
 enabled    = true
 crf        = 28
-resolution = "3840x2160"
+resolution = "1280x720"
+
+[fixtures.hdr.hevc_hlg]
+enabled    = true
+crf        = 28
+resolution = "1280x720"
+
+[fixtures.hdr.hevc_dolby_vision_81]
+enabled    = true    # needs dovi_tool + MP4Box; skips cleanly if absent
+crf        = 28
+resolution = "1280x720"
 
 # ── Custom fixtures ───────────────────────────────────────────────────────────
 # Add arbitrary fixtures without editing any script.

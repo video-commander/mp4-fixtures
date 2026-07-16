@@ -61,8 +61,13 @@ metadata    = true
 edge_cases  = true
 gaps        = true
 drm         = true
-hdr         = false   # disabled by default — slow and large
+hdr         = true    # HDR10 + HLG; Dolby Vision needs dovi_tool + MP4Box
 ```
+
+The Dolby Vision fixture (`hevc_dolby_vision_81`) needs two extra tools on
+`PATH` — [`dovi_tool`](https://github.com/quietvoid/dovi_tool) and GPAC's
+`MP4Box` — and skips cleanly if either is missing. HDR10 and HLG need only
+ffmpeg. CI installs all three (see `.github/workflows/release.yml`).
 
 ### `[defaults]`
 
@@ -136,7 +141,7 @@ duration   = 30
 | `edge_cases` | Very short, 2-hour, truncated, B-frames, many fragments |
 | `gaps` | Timeline gaps: dropped video frames (stretched samples), tracks ending early |
 | `drm` | CENC-encrypted (cenc-aes-ctr, stable KID/key), plus a deliberate tenc-vs-pssh KID mismatch |
-| `hdr` | HEVC HDR10 with correct SEI metadata |
+| `hdr` | HEVC HDR10 (PQ + mdcv/clli colour boxes) and HLG, with real colr/mdcv/clli ISOBMFF boxes |
 
 ## Adding a new category
 
