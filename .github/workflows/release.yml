@@ -58,12 +58,17 @@ jobs:
           ./generate.sh
 
       - name: Verify fixture set
+        # Strict, mirroring the smoke job: abort before publishing if any
+        # fixture FAILED. Optional codecs log SKIP (e.g. aac_he needs libfdk_aac,
+        # absent from this build) and are fine — a FAILED is a real error.
         run: |
           count=$(ls output/*.mp4 | wc -l)
           echo "generated $count fixtures"
-          # aac_he is expected to fail on stock ffmpeg (needs libfdk_aac);
-          # anything else failing should be investigated via generate.log.
-          grep "FAILED" output/generate.log && echo "^ see generate.log" || true
+          if grep -q "FAILED" output/generate.log; then
+            echo "::error::a fixture failed to generate — refusing to publish"
+            grep -nE "→ |FAILED" output/generate.log
+            exit 1
+          fi
           if [ "$count" -lt 45 ]; then
             echo "expected at least 45 fixtures, got $count" >&2
             exit 1
