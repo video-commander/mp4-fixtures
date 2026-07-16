@@ -10,6 +10,7 @@ Generates a comprehensive library of MP4 (or MOV/MKV) test files covering codecs
 
 - `ffmpeg` on your PATH (or set `ffmpeg_bin` in `fixtures.toml`)
   - Recommended: build from [ffmpeg-builder](https://github.com/video-commander/ffmpeg-builder) for a static binary with all codecs
+  - **ffmpeg ≥ 7** for the HDR fixtures: older builds (e.g. Ubuntu's apt 6.1) cannot write the `mdcv`/`clli` colour boxes that HDR10 and Dolby Vision assert, so those recipes fail their self-verification. CI uses a pinned 8.1 static build.
 - Python 3.8+ (3.11+ preferred for stdlib `tomllib`; older versions need `pip install tomli`)
 
 ## Quick start
@@ -141,7 +142,7 @@ duration   = 30
 | `edge_cases` | Very short, 2-hour, truncated, B-frames, many fragments |
 | `gaps` | Timeline gaps: dropped video frames (stretched samples), tracks ending early |
 | `drm` | CENC-encrypted (cenc-aes-ctr, stable KID/key), plus a deliberate tenc-vs-pssh KID mismatch |
-| `hdr` | HEVC HDR10 (PQ + mdcv/clli colour boxes) and HLG, with real colr/mdcv/clli ISOBMFF boxes |
+| `hdr` | HEVC HDR10 (PQ) and HLG with real colr/mdcv/clli ISOBMFF boxes, plus Dolby Vision 8.1 (single-layer, HDR10-compatible; needs `dovi_tool` + `MP4Box`, skips cleanly otherwise) |
 
 ## Adding a new category
 
