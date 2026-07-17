@@ -65,10 +65,15 @@ drm         = true
 hdr         = true    # HDR10 + HLG; Dolby Vision needs dovi_tool + MP4Box
 ```
 
-The Dolby Vision fixture (`hevc_dolby_vision_81`) needs two extra tools on
-`PATH` — [`dovi_tool`](https://github.com/quietvoid/dovi_tool) and GPAC's
-`MP4Box` — and skips cleanly if either is missing. HDR10 and HLG need only
-ffmpeg. CI installs all three (see `.github/workflows/release.yml`).
+Some HDR fixtures need extra tools on `PATH` and skip cleanly when they're
+missing: Dolby Vision (`hevc_dolby_vision_81`) needs
+[`dovi_tool`](https://github.com/quietvoid/dovi_tool) and GPAC's `MP4Box`;
+HDR10+ (`hevc_hdr10plus`) needs
+[`hdr10plus_tool`](https://github.com/quietvoid/hdr10plus_tool); the
+bitstream-only fixture (`hevc_hdr10_bitstream_only`) needs `MP4Box`, because
+ffmpeg's MP4 muxer would copy the VUI into a `colr` box and defeat it. HDR10,
+HLG and `hevc_hdr10_sei_only_colr` need only ffmpeg. CI installs everything
+(see `.github/workflows/release.yml`).
 
 ### `[defaults]`
 
@@ -142,7 +147,7 @@ duration   = 30
 | `edge_cases` | Very short, 2-hour, truncated, B-frames, many fragments |
 | `gaps` | Timeline gaps: dropped video frames (stretched samples), tracks ending early |
 | `drm` | CENC-encrypted (cenc-aes-ctr, stable KID/key), plus a deliberate tenc-vs-pssh KID mismatch |
-| `hdr` | HEVC HDR10 (PQ) and HLG with real colr/mdcv/clli ISOBMFF boxes, plus Dolby Vision 8.1 (single-layer, HDR10-compatible; needs `dovi_tool` + `MP4Box`, skips cleanly otherwise) |
+| `hdr` | HEVC HDR10 (PQ) and HLG with real colr/mdcv/clli ISOBMFF boxes; HDR10 with signalling only in the bitstream (VUI/SEI, no colour boxes; needs `MP4Box`); HDR10 with a colr box but SEI-only static metadata (the typical ffmpeg remux profile); HDR10+ with ST 2094-40 dynamic-metadata SEI (needs `hdr10plus_tool`); and Dolby Vision 8.1 (single-layer, HDR10-compatible; needs `dovi_tool` + `MP4Box`). Fixtures needing missing tools skip cleanly |
 
 ## Adding a new category
 

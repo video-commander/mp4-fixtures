@@ -41,15 +41,20 @@ jobs:
           sudo tar -xJf /tmp/ffmpeg.tar.xz --strip-components=2 -C /usr/local/bin "${FF}/bin/ffmpeg" "${FF}/bin/ffprobe"
           ffmpeg -version | head -1
 
-      - name: Install dovi_tool
-        # Dolby Vision fixtures need dovi_tool (RPU) + MP4Box (writes dvvC).
-        # Pinned to keep the DV fixture byte-stable across runs; the hdr.sh
-        # recipe skips the DV fixture cleanly if either tool is missing.
+      - name: Install dovi_tool + hdr10plus_tool
+        # Dolby Vision fixtures need dovi_tool (RPU) + MP4Box (writes dvvC);
+        # the HDR10+ fixture needs hdr10plus_tool (injects ST 2094-40 SEI).
+        # Pinned to keep those fixtures byte-stable across runs; the hdr.sh
+        # recipes skip cleanly if a tool is missing.
         run: |
           DOVI_VERSION=2.3.3
           curl -fsSL "https://github.com/quietvoid/dovi_tool/releases/download/${DOVI_VERSION}/dovi_tool-${DOVI_VERSION}-x86_64-unknown-linux-musl.tar.gz" \
             | sudo tar -xz -C /usr/local/bin
+          HDR10PLUS_VERSION=1.7.2
+          curl -fsSL "https://github.com/quietvoid/hdr10plus_tool/releases/download/${HDR10PLUS_VERSION}/hdr10plus_tool-${HDR10PLUS_VERSION}-x86_64-unknown-linux-musl.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin
           dovi_tool --version
+          hdr10plus_tool --version
           MP4Box -version 2>&1 | head -1
 
       - name: Generate fixtures

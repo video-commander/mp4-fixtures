@@ -17,7 +17,7 @@ metadata    = true
 edge_cases  = true
 gaps        = true
 drm         = true
-hdr         = true    # HDR10 + HLG (ffmpeg) and Dolby Vision 8.1 (dovi_tool + MP4Box)
+hdr         = true    # HDR10/HLG/HDR10+ variants + Dolby Vision 8.1; see [fixtures.hdr.*]
 
 [defaults]
 crf           = 23
@@ -225,6 +225,21 @@ resolution = "1280x720"
 
 [fixtures.hdr.hevc_hlg]
 enabled    = true
+crf        = 28
+resolution = "1280x720"
+
+[fixtures.hdr.hevc_hdr10_bitstream_only]
+enabled    = true    # HDR10 in VUI/SEI only, no colr/mdcv/clli boxes; needs MP4Box
+crf        = 28
+resolution = "1280x720"
+
+[fixtures.hdr.hevc_hdr10_sei_only_colr]
+enabled    = true    # colr box + SEI-only static metadata (typical ffmpeg remux); ffmpeg only
+crf        = 28
+resolution = "1280x720"
+
+[fixtures.hdr.hevc_hdr10plus]
+enabled    = true    # HDR10+ (ST 2094-40) dynamic-metadata SEI; needs hdr10plus_tool
 crf        = 28
 resolution = "1280x720"
 

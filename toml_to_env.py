@@ -46,11 +46,11 @@ def main():
     emit("OUTPUT_DIR",      settings.get("output_dir", "./output"))
     emit("OUTPUT_FORMAT",   settings.get("output_format", "mp4"))
 
-    # [categories]
+    # [categories] — emit a flag per key present in the table; generate.sh
+    # defaults absent CAT_* vars to enabled, so no hardcoded list to maintain.
     cats = cfg.get("categories", {})
-    for cat in ["codecs", "resolutions", "frame_rates", "audio", "container", "metadata", "edge_cases", "hdr"]:
-        val = "1" if cats.get(cat, True) else "0"
-        emit(f"CAT_{cat.upper()}", val)
+    for cat, enabled in cats.items():
+        emit(f"CAT_{cat.upper()}", "1" if enabled else "0")
 
     # [defaults]
     defaults = cfg.get("defaults", {})
