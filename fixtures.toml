@@ -17,6 +17,7 @@ metadata    = true
 edge_cases  = true
 gaps        = true
 subtitles   = true    # tx3g/wvtt/stpp tracks + embedded CEA-608/708; see [fixtures.subtitles.*]
+scte35      = true    # emsg event messages with SCTE-35 splice markers
 drm         = true
 hdr         = true    # HDR10/HLG/HDR10+ variants + Dolby Vision 8.1; see [fixtures.hdr.*]
 
@@ -225,6 +226,9 @@ enabled = true    # CEA-608+708 A/53 SEIs on every frame; needs MP4Box
 [fixtures.subtitles.cc_dropout]
 enabled    = true # caption SEIs missing on every Nth frame; needs MP4Box
 skip_every = 7
+
+[fixtures.scte35.scte35_emsg]
+enabled = true    # fragmented MP4 with 3 emsg boxes: splice_insert, ID3, time_signal
 
 [fixtures.drm.drm_cenc]
 enabled = true    # cenc-aes-ctr, KID 1122…ff00; full sinf chain, no pssh

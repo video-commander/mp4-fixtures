@@ -22,6 +22,7 @@ metadata    = true
 edge_cases  = true
 gaps        = true
 subtitles   = true
+scte35      = true
 drm         = true
 hdr         = true
 

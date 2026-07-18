@@ -62,6 +62,7 @@ metadata    = true
 edge_cases  = true
 gaps        = true
 subtitles   = true    # wvtt/ttml/embedded-caption fixtures need MP4Box
+scte35      = true    # emsg/SCTE-35 splice markers; ffmpeg + python only
 drm         = true
 hdr         = true    # HDR10 + HLG; Dolby Vision needs dovi_tool + MP4Box
 ```
@@ -154,6 +155,7 @@ duration   = 30
 | `edge_cases` | Very short, 2-hour, truncated, B-frames, many fragments |
 | `gaps` | Timeline gaps: dropped video frames (stretched samples), tracks ending early |
 | `subtitles` | Subtitle tracks in all three MP4 carriages (tx3g/mov_text with UTF-8 + multi-line cues, WebVTT with cue settings, TTML/stpp) plus embedded CEA-608/708 caption SEIs — full coverage and a dropout variant (needs `MP4Box`) |
+| `scte35` | Fragmented MP4 with `emsg` event messages: SCTE-35 splice_insert (out-of-network + auto-return break) and time_signal with a segmentation descriptor, plus a non-SCTE ID3 event (`lib/inject_emsg.py` hand-builds the boxes) |
 | `drm` | CENC-encrypted (cenc-aes-ctr, stable KID/key), plus a deliberate tenc-vs-pssh KID mismatch |
 | `hdr` | HEVC HDR10 (PQ) and HLG with real colr/mdcv/clli ISOBMFF boxes; HDR10 with signalling only in the bitstream (VUI/SEI, no colour boxes; needs `MP4Box`); HDR10 with a colr box but SEI-only static metadata (the typical ffmpeg remux profile); HDR10+ with ST 2094-40 dynamic-metadata SEI (needs `hdr10plus_tool`); and Dolby Vision 8.1 (single-layer, HDR10-compatible; needs `dovi_tool` + `MP4Box`). Fixtures needing missing tools skip cleanly |
 
