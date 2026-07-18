@@ -21,6 +21,7 @@ container   = true
 metadata    = true
 edge_cases  = true
 gaps        = true
+subtitles   = true
 drm         = true
 hdr         = true
 

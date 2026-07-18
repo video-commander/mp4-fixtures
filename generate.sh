@@ -76,6 +76,7 @@ run_category container
 run_category metadata
 run_category edge_cases
 run_category gaps
+run_category subtitles
 run_category drm
 run_category hdr
 

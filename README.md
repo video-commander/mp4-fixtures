@@ -61,18 +61,25 @@ container   = true
 metadata    = true
 edge_cases  = true
 gaps        = true
+subtitles   = true    # wvtt/ttml/embedded-caption fixtures need MP4Box
 drm         = true
 hdr         = true    # HDR10 + HLG; Dolby Vision needs dovi_tool + MP4Box
 ```
 
-Some HDR fixtures need extra tools on `PATH` and skip cleanly when they're
-missing: Dolby Vision (`hevc_dolby_vision_81`) needs
+Some HDR and subtitle fixtures need extra tools on `PATH` and skip cleanly
+when they're missing: Dolby Vision (`hevc_dolby_vision_81`) needs
 [`dovi_tool`](https://github.com/quietvoid/dovi_tool) and GPAC's `MP4Box`;
 HDR10+ (`hevc_hdr10plus`) needs
 [`hdr10plus_tool`](https://github.com/quietvoid/hdr10plus_tool); the
 bitstream-only fixture (`hevc_hdr10_bitstream_only`) needs `MP4Box`, because
 ffmpeg's MP4 muxer would copy the VUI into a `colr` box and defeat it. HDR10,
-HLG and `hevc_hdr10_sei_only_colr` need only ffmpeg. CI installs everything
+HLG and `hevc_hdr10_sei_only_colr` need only ffmpeg. In the subtitles
+category, `wvtt` and `ttml` need `MP4Box` (ffmpeg can't mux those formats
+into MP4), and the embedded-caption fixtures (`cc_embedded`, `cc_dropout`)
+need `MP4Box` too: no common tool authors CEA-608/708 SEIs, so
+`lib/inject_cc.py` splices crafted A/53 "GA94" SEI NALs into a raw Annex-B
+H.264 stream, which MP4Box then muxes (verified via ffprobe's A53 frame side
+data). `tx3g_utf8` needs only ffmpeg. CI installs everything
 (see `.github/workflows/release.yml`).
 
 ### `[defaults]`
@@ -146,6 +153,7 @@ duration   = 30
 | `metadata` | Rotation (90/180/270), chapters, embedded subtitle track |
 | `edge_cases` | Very short, 2-hour, truncated, B-frames, many fragments |
 | `gaps` | Timeline gaps: dropped video frames (stretched samples), tracks ending early |
+| `subtitles` | Subtitle tracks in all three MP4 carriages (tx3g/mov_text with UTF-8 + multi-line cues, WebVTT with cue settings, TTML/stpp) plus embedded CEA-608/708 caption SEIs — full coverage and a dropout variant (needs `MP4Box`) |
 | `drm` | CENC-encrypted (cenc-aes-ctr, stable KID/key), plus a deliberate tenc-vs-pssh KID mismatch |
 | `hdr` | HEVC HDR10 (PQ) and HLG with real colr/mdcv/clli ISOBMFF boxes; HDR10 with signalling only in the bitstream (VUI/SEI, no colour boxes; needs `MP4Box`); HDR10 with a colr box but SEI-only static metadata (the typical ffmpeg remux profile); HDR10+ with ST 2094-40 dynamic-metadata SEI (needs `hdr10plus_tool`); and Dolby Vision 8.1 (single-layer, HDR10-compatible; needs `dovi_tool` + `MP4Box`). Fixtures needing missing tools skip cleanly |
 

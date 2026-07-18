@@ -16,6 +16,7 @@ container   = true
 metadata    = true
 edge_cases  = true
 gaps        = true
+subtitles   = true    # tx3g/wvtt/stpp tracks + embedded CEA-608/708; see [fixtures.subtitles.*]
 drm         = true
 hdr         = true    # HDR10/HLG/HDR10+ variants + Dolby Vision 8.1; see [fixtures.hdr.*]
 
@@ -208,6 +209,22 @@ duration = 60     # one 0.5s hole every 2s → ~29 gaps; stresses capped gap UIs
 
 [fixtures.gaps.gap_combo]
 enabled = true    # video hole at 4–6s plus audio ending at 7s
+
+[fixtures.subtitles.tx3g_utf8]
+enabled = true    # mov_text with multi-line + UTF-8 cues; ffmpeg only
+
+[fixtures.subtitles.wvtt]
+enabled = true    # WebVTT-in-MP4 with cue settings; needs MP4Box
+
+[fixtures.subtitles.ttml]
+enabled = true    # TTML/IMSC1 (stpp), segmented XML sample docs; needs MP4Box
+
+[fixtures.subtitles.cc_embedded]
+enabled = true    # CEA-608+708 A/53 SEIs on every frame; needs MP4Box
+
+[fixtures.subtitles.cc_dropout]
+enabled    = true # caption SEIs missing on every Nth frame; needs MP4Box
+skip_every = 7
 
 [fixtures.drm.drm_cenc]
 enabled = true    # cenc-aes-ctr, KID 1122…ff00; full sinf chain, no pssh
